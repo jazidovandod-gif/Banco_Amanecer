@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.env
+# Ignorar el script auxiliar que creamos para capturas
+tomar_capturas.py

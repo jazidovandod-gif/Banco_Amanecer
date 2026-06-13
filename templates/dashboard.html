@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Banco Amanecer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="logo-icon">🏦</div>
+        <div>
+            <div class="sidebar-brand-name">Banco Amanecer</div>
+            <div class="sidebar-brand-sub">Sistema Bancario</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Principal</div>
+      <a href="{{ url_for('dashboard.dashboard_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section-title">Gestión</div>
+      <a href="{{ url_for('clientes.clientes_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</a>
+      <a href="{{ url_for('cuentas.cuentas_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Cuentas</a>
+      <a href="{{ url_for('transacciones.transacciones_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Transacciones</a>
+      <a href="{{ url_for('prestamos.prestamos_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Préstamos</a>
+      <a href="{{ url_for('tarjetas.tarjetas_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Tarjetas</a>
+      
+      {% if session.empleado_cargo == 'Administrador' %}
+      <a href="{{ url_for('auditoria.auditoria_index') }}" class="nav-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Auditoría</a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">{{ session.empleado_nombre[0] if session.empleado_nombre else 'A' }}</div>
+            <div>
+                <div class="user-name">{{ session.empleado_nombre }}</div>
+                <div class="user-role">{{ session.empleado_cargo }}</div>
+            </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout-btn">Cerrar sesión</a>
+    </div>
+  </aside>
+  <main class="main-content">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <div class="topbar">
+      <div><div class="page-title">Dashboard</div><div class="page-breadcrumb">Banco Amanecer / Inicio</div></div>
+    </div>
+    <div class="content">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}" style="margin-bottom:16px">{{ msg }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+        <div class="stats-grid">
+            <div class="stat-card blue"><div class="stat-icon blue">👥</div><div><div class="stat-value">{{ total_clientes or 0 }}</div><div class="stat-label">Clientes Activos</div></div></div>
+            <div class="stat-card green"><div class="stat-icon green">💳</div><div><div class="stat-value">{{ total_cuentas or 0 }}</div><div class="stat-label">Cuentas Abiertas</div></div></div>
+            <div class="stat-card purple"><div class="stat-icon purple">💰</div><div><div class="stat-value">Bs {{ "{:,.2f}".format(total_saldos or 0) }}</div><div class="stat-label">Total en Depósitos</div></div></div>
+            <div class="stat-card orange"><div class="stat-icon orange">📊</div><div><div class="stat-value">{{ transacciones_hoy or 0 }}</div><div class="stat-label">Transacciones Hoy</div></div></div>
+        </div>
+        
+        <div class="two-col" style="margin-bottom: 24px;">
+            <div class="card">
+                <div class="card-header"><div><div class="card-title">Distribución de Saldos</div></div></div>
+                <div style="padding: 24px; display: flex; justify-content: center; align-items: center; height: 300px;">
+                    <canvas id="chartSaldos"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div><div class="card-title">Volumen de Transacciones</div></div></div>
+                <div style="padding: 24px; height: 300px;">
+                    <canvas id="chartTransacciones"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-header"><div><div class="card-title">Últimas Transacciones</div></div></div>
+                <table>
+                    <thead><tr><th>Cliente</th><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead>
+                    <tbody>
+                        {% for t in ultimas_transacciones %}
+                        <tr>
+                            <td>{{ t.nombre }} {{ t.apellido }}</td>
+                            <td>
+                                {% if t.tipo == 'deposito' %}<span class="badge badge-success">Depósito</span>
+                                {% elif t.tipo == 'retiro' %}<span class="badge badge-danger">Retiro</span>
+                                {% elif t.tipo == 'transferencia_salida' %}<span class="badge badge-warning">Transf. Enviada</span>
+                                {% elif t.tipo == 'transferencia_entrada' %}<span class="badge badge-success" style="background:#dcfce7;color:#166534;">Transf. Recibida</span>
+                                {% else %}<span class="badge badge-info">Transferencia</span>{% endif %}
+                            </td>
+                            <td>Bs {{ "{:,.2f}".format(t.monto) }}</td>
+                            <td>{{ t.fecha.strftime('%d/%m %H:%M') if t.fecha else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-header"><div><div class="card-title">Préstamos Pendientes</div></div></div>
+                <table>
+                    <thead><tr><th>Cliente</th><th>Monto</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        {% for p in prestamos_pendientes %}
+                        <tr>
+                            <td>{{ p.nombre }} {{ p.apellido }}</td>
+                            <td>Bs {{ "{:,.2f}".format(p.monto) }}</td>
+                            <td><span class="badge badge-warning">Pendiente</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <script>
+            // Gráfico de Saldos (Anillo con Porcentajes)
+            const ctxSaldos = document.getElementById('chartSaldos').getContext('2d');
+            new Chart(ctxSaldos, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ahorro', 'Corriente'],
+                    datasets: [{
+                        data: [{{ saldo_ahorro|default(0) }}, {{ saldo_corriente|default(0) }}],
+                        backgroundColor: ['#3B82F6', '#F97316'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                plugins: [ChartDataLabels],
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 16 },
+                            formatter: (value, ctx) => {
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.forEach(data => { sum += Number(data); });
+                                if (sum === 0 || value === 0) return '';
+                                let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                return percentage;
+                            }
+                        }
+                    } 
+                }
+            });
+
+            // Gráfico de Transacciones (Barras)
+            const ctxTrans = document.getElementById('chartTransacciones').getContext('2d');
+            new Chart(ctxTrans, {
+                type: 'bar',
+                data: {
+                    labels: ['Depósitos', 'Retiros', 'Transferencias'],
+                    datasets: [{
+                        label: 'Monto Total (Bs)',
+                        data: [{{ vol_depositos|default(0) }}, {{ vol_retiros|default(0) }}, {{ vol_transferencias|default(0) }}],
+                        backgroundColor: ['#22C55E', '#EF4444', '#0EA5E9'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { display: false } // Desactivar porcentajes en barras
+                    },
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+                }
+            });
+        </script>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
