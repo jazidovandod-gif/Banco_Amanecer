@@ -117,6 +117,7 @@ Donde:
 | fecha_solicitud | DATETIME | Cuándo se registró la solicitud |
 | fecha_aprobacion | DATETIME | Cuándo se aprobó (si aplica) |
 | empleado_id | INT (FK) | Empleado que aprobó/rechazó |
+| motivo_rechazo | VARCHAR(255) | Motivo del rechazo (NULL si fue aprobado) |
 
 ### Tabla `cuotas_prestamo`
 | Campo | Tipo | Descripción |

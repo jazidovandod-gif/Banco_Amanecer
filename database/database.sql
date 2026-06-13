@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS prestamos (
     estado ENUM('pendiente', 'aprobado', 'rechazado', 'pagado') DEFAULT 'pendiente',
     fecha_solicitud DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_aprobacion DATETIME,
+    motivo_rechazo VARCHAR(255) DEFAULT NULL,
     empleado_id INT,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (empleado_id) REFERENCES empleados(id)
@@ -136,3 +137,7 @@ INSERT INTO cuentas (numero_cuenta, tipo, saldo, cliente_id) VALUES
 ('1000000001', 'ahorro', 5000.00, 1),
 ('1000000002', 'corriente', 12000.00, 2),
 ('1000000003', 'ahorro', 850.50, 3);
+
+-- MIGRACIÓN: Agregar columna motivo_rechazo si ya existe la base de datos
+-- Ejecutar solo si la base de datos ya fue creada previamente:
+-- ALTER TABLE prestamos ADD COLUMN motivo_rechazo VARCHAR(255) DEFAULT NULL AFTER fecha_aprobacion;
