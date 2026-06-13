@@ -17,26 +17,57 @@ G:\banco\
 │   └── database.sql
 │
 ├── crud/                    (3. Capa de Lógica / Modelo)
-│   ├── clientes_crud.py
-│   ├── cuentas_crud.py
-│   └── ...
+│   └── clientes_crud.py
 │
 ├── routes/                  (4. Capa de Controladores HTTP)
+│   ├── __init__.py
 │   ├── auth.py
+│   ├── dashboard.py
 │   ├── clientes.py
 │   ├── cuentas.py
-│   └── ...
+│   ├── transacciones.py
+│   ├── prestamos.py
+│   ├── tarjetas.py
+│   └── auditoria.py
 │
 ├── templates/               (5. Capa de Vistas - HTML)
 │   ├── login.html
-│   └── ...
+│   ├── dashboard.html
+│   ├── clientes.html
+│   ├── nuevo_cliente.html
+│   ├── cuentas.html
+│   ├── nueva_cuenta.html
+│   ├── transacciones.html
+│   ├── nueva_transaccion.html
+│   ├── prestamos.html
+│   ├── solicitar_prestamo.html
+│   ├── detalle_prestamo.html
+│   ├── tarjetas.html
+│   ├── nueva_tarjeta.html
+│   └── auditoria.html
 │
 ├── static/                  (6. Capa de Estilos Visuales - CSS/JS)
-│   ├── css/
-│   └── js/
+│   └── css/
+│       └── style.css
+│
+├── docs/                    (9. Documentación del Proyecto)
+│   ├── ESTRUCTURA_DEL_PROYECTO.md
+│   └── DOCUMENTACION_PRESTAMOS.md
+│
+├── scripts/                 (10. Scripts Auxiliares y de Mantenimiento)
+│   ├── recover.py
+│   ├── create_tarjetas.py
+│   └── update_templates.py
+│
+├── capturas/                (11. Capturas de Pantalla por Rol)
+│   ├── admin/
+│   └── cajero/
 │
 ├── app.py                   (7. El Núcleo / Inicializador)
-└── utils.py                 (8. Utilidades Compartidas)
+├── utils.py                 (8. Utilidades Compartidas)
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
 ---
@@ -82,6 +113,18 @@ Es la **puerta de entrada**. Lo único que hace es:
 
 ### 8. `utils.py` (Ayudantes)
 Guarda pedazos de código que se repiten en muchos lados, como por ejemplo la función de "Verificar si el usuario inició sesión" (`@login_required`) o registrar auditorías de seguridad.
+
+### 9. `docs/` (Documentación)
+Contiene los archivos Markdown que explican cómo funciona el sistema, su arquitectura y el módulo de préstamos. No afectan la ejecución del sistema, pero son esenciales para que cualquier desarrollador pueda entender y mantener el proyecto.
+
+### 10. `scripts/` (Auxiliares)
+Scripts de mantenimiento y recuperación que no forman parte de la aplicación web:
+- **`recover.py`**: Reconstruye la carpeta `templates/` en caso de pérdida de archivos.
+- **`create_tarjetas.py`**: Inyección masiva de datos para el módulo de tarjetas.
+- **`update_templates.py`**: Actualizaciones rápidas y masivas sobre las vistas HTML.
+
+### 11. `capturas/` (Capturas de Pantalla)
+Contiene las capturas de pantalla organizadas por rol de usuario (`admin/` y `cajero/`). Son usadas principalmente en el `README.md` del repositorio de GitHub para mostrar la interfaz del sistema.
 
 ---
 **Conclusión:**
