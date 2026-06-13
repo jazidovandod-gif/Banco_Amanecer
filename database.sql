@@ -1,6 +1,4 @@
--- ============================================
 -- SISTEMA BANCARIO - Base de Datos
--- ============================================
 
 CREATE DATABASE IF NOT EXISTS banco_db
     CHARACTER SET utf8mb4
@@ -120,9 +118,7 @@ CREATE TABLE IF NOT EXISTS tarjetas (
     FOREIGN KEY (cuenta_id) REFERENCES cuentas(id) ON DELETE CASCADE
 );
 
--- ============================================
 -- DATOS INICIALES
--- ============================================
 
 -- Empleado administrador (password: admin123)
 INSERT INTO empleados (nombre, apellido, cargo, usuario, password, email) VALUES
