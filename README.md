@@ -95,6 +95,14 @@ El proyecto mantiene una estricta separación de responsabilidades:
 - `templates/` & `static/` (Vistas): Interfaz HTML estilizada con CSS puro.
 
 ---
+
+## 🛠️ Scripts Auxiliares (Secundarios)
+
+El proyecto incluye archivos adicionales que no son requeridos para el funcionamiento normal de la aplicación web, pero son útiles para tareas de mantenimiento y recuperación:
+- **`recover.py`**: Un script de seguridad que contiene el código fuente de todas las vistas (HTML) incrustado. Permite reconstruir o regenerar la carpeta `templates/` de forma automática en caso de pérdida de archivos.
+- **`create_tarjetas.py` / `update_templates.py`**: Scripts de utilidad para la inyección masiva de datos iniciales o actualizaciones rápidas en la estructura de plantillas y esquemas de tarjetas.
+
+---
 <div align="center">
   <i>Desarrollado con pasión para transformar las finanzas.</i>
 </div>
